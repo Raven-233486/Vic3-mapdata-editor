@@ -40,6 +40,7 @@ var showWindowAsync = user32.NewProc("ShowWindowAsync")
 var SetForegroundWindow = user32.NewProc("SetForegroundWindow")
 var data_src = "./data"
 var game_data = ""
+var mod_name = ""
 
 func main() {
 	go func() {
@@ -70,6 +71,23 @@ func main() {
 				log.Printf("%s %s%s from %s changed\n", r2.Method, r2.Host, r2.URL.String(), r2.RemoteAddr)
 				http.FileServer(http.Dir(game_data)).ServeHTTP(rw, r2)
 			}))
+		if mod_name != "" {
+			http.Handle("/mod_data/", http.HandlerFunc(
+				func(rw http.ResponseWriter, r *http.Request) {
+					log.Printf("%s %s%s from %s\n", r.Method, r.Host, r.URL.String(), r.RemoteAddr)
+					prefix := "/mod_data/"
+					p := strings.TrimPrefix(r.URL.Path, prefix)
+					rp := strings.TrimPrefix(r.URL.RawPath, prefix)
+					r2 := new(http.Request)
+					*r2 = *r
+					r2.URL = new(url.URL)
+					*r2.URL = *r.URL
+					r2.URL.Path = p
+					r2.URL.RawPath = rp
+					log.Printf("%s %s%s from %s changed\n", r2.Method, r2.Host, r2.URL.String(), r2.RemoteAddr)
+					http.FileServer(http.Dir("/Paradox Interactive/Victoria 3/mod/"+mod_name)).ServeHTTP(rw, r2)
+				}))
+		}
 		http.HandleFunc("/upload", handle_upload)
 		http.HandleFunc("/debug", handle_debug)
 		log.Println(localization["start running"])

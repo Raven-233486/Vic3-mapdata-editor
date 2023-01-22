@@ -435,7 +435,7 @@ const draw_building_detail = (key,lv,re,pm,data,disabled=true) => {
         if (!key_input.value || !value_input.value || !re_input.value){
             return
         }
-        console.log(data)
+        
 
         let arr = {}
         let push = false
@@ -447,10 +447,13 @@ const draw_building_detail = (key,lv,re,pm,data,disabled=true) => {
         lv = arr["level"]
         re = arr["reservse"]
 
+        console.log(data,arr)
+
         if (key)key_input.disabled = true
 
-
-        if (data["create_building"] instanceof Array){
+        if (data["create_building"] instanceof Array && data["create_building"].length == 0){
+            data["create_building"] = [arr]
+        } else if (data["create_building"] instanceof Array){
             for (let i=0;i<data["create_building"].length;i++){
                 push = true
                 if (data["create_building"][i]["building"] == key_input.value){

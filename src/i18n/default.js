@@ -19,7 +19,7 @@ let localization = {
 
     init_load:"INITIALIZE...",
     save:"SAVE",
-    start_edit:"start edit",
+    start_edit:"start pin the city",
     convert:"CONVERT",
     paneltop:"EDIT panel",
 
@@ -55,7 +55,7 @@ let localization = {
     read_terrain_map_finnish:"read_terrain_map_finnish",
     loading_terrain:"loading terrain",
     load_terrain_fin:"load terrain fin",
-    terrain:"地形",
+    terrain:"terrain",
 
     save_locators:"save locators",
 }

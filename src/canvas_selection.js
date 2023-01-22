@@ -109,6 +109,7 @@ const select_provs = (imgdata,state_data,label,sindex,provs_name,e) => {
     }
 }
 
+
 const select_provs_color = (hexname,imgdata) => {
     let points = full_data.colormap[hexname]
     for(let i = 0; i < points.length; i++){

@@ -19,7 +19,7 @@ let localization = {
 
     init_load:"加载中",
     save:"保存",
-    start_edit:"开始编辑",
+    start_edit:"开始编辑城市",
     convert:"转换",
     paneltop:"编辑栏",
 

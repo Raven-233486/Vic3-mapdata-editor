@@ -21,6 +21,17 @@ const get_file_dict = async (src,vanilla=false) => {
     )
 }
 
+const load_optional = async (src,exec_func,err_func) => {
+    await fetch(src).then((resp) => {
+        if (!resp.ok){
+            throw new Error("404")
+        } else {
+            exec_func(src)                
+        }
+    }).catch((err) => {
+        err_func(src,err)
+    })
+}
 
 
 

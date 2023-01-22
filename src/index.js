@@ -256,7 +256,6 @@ init_worker.onmessage = function(e) {
                 )                
             }
         }).catch((err) => { 
-            console.log("")
             mode_selection.querySelector("option[value='terrain']").disabled = true
         })
 
@@ -355,6 +354,7 @@ const canvas_select = function(e){
     } else if (mode == "edit"){
         select_provs(imgdata,state_data,label,(y*canvas.width + x)*4,provs_name,e)
         select_info.innerText = `${localization.select_provs}${provs_name.size}${localization.pieces}`
+        document.getElementById("check_impassable").disabled = (provs_name.size == 1)
     } else if (mode == "strategic"){
         if (!panel_state_info[0])return
         for(let j=0,keys=Object.keys(full_map_data.strategic_regions_map),len=keys.length;j<len;j++){
