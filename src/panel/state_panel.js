@@ -265,10 +265,15 @@ const draw_pop_detail = (cu,religion,size,data,pop_type,disabled=true) => {
             else return
         }
 
-        if (data["create_pop"] instanceof Array){
+        console.log(data)
+
+        if (data["create_pop"] instanceof Array && data["create_pop"].length > 1){
             for (let i=0;i<data["create_pop"].length;i++){
-                if (data["create_pop"][i]["culture"] == cu && data["create_pop"][i]["religion"] == religion && data["create_pop"][i]["pop_type"] == pop_type ){
-                    data["create_pop"] = data["create_pop"].filter((items,index) => ![i].includes(index))
+                if (data["create_pop"][i]["culture"] == cu_input.value && 
+                    data["create_pop"][i]["religion"] == r_input.value && 
+                    data["create_pop"][i]["pop_type"] == pt_input.value ){
+                    
+                        data["create_pop"] = data["create_pop"].filter((items,index) => ![i].includes(index))
                     break
                 }
             }
@@ -296,7 +301,7 @@ const draw_pop_detail = (cu,religion,size,data,pop_type,disabled=true) => {
         arr["size"] = parseInt(value_input.value)
 
 
-        if (data["create_pop"] instanceof Array){
+        if (data["create_pop"] instanceof Array && data["create_pop"].length > 0){
             for (let i=0;i<data["create_pop"].length;i++){
                 if (data["create_pop"][i]["culture"] == cu_input.value){
                         procees = true
@@ -418,7 +423,7 @@ const draw_building_detail = (key,lv,re,pm,data,disabled=true) => {
             else return
         }
 
-        if (data["create_building"] instanceof Array){
+        if (data["create_building"] instanceof Array && data["create_building"].length > 0){
             for (let i=0;i<data["create_building"].length;i++){
                 if (data["create_building"][i]["building"] == key){
                     data["create_building"] = data["create_building"].filter((items,index) => ![i].includes(index))
@@ -451,9 +456,7 @@ const draw_building_detail = (key,lv,re,pm,data,disabled=true) => {
 
         if (key)key_input.disabled = true
 
-        if (data["create_building"] instanceof Array && data["create_building"].length == 0){
-            data["create_building"] = [arr]
-        } else if (data["create_building"] instanceof Array){
+        if (data["create_building"] instanceof Array && data["create_building"].length > 0){
             for (let i=0;i<data["create_building"].length;i++){
                 push = true
                 if (data["create_building"][i]["building"] == key_input.value){
@@ -486,7 +489,7 @@ const draw_building_detail = (key,lv,re,pm,data,disabled=true) => {
         else more_info.style.display = "none"
         more_info.innerHTML = `<p>${key_input.value}</p><p>生产方式:<button>+</button></p>`
 
-        if (data["create_building"] instanceof Array){
+        if (data["create_building"] instanceof Array && data["create_building"].length > 0){
             for (let i=0;i<data["create_building"].length;i++){
                 if (data["create_building"][i]["building"] == key){
                     pm = data["create_building"][i]

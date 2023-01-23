@@ -41,10 +41,12 @@ var SetForegroundWindow = user32.NewProc("SetForegroundWindow")
 var data_src = "./data"
 var game_data = ""
 var mod_name = ""
+var mod_full_flag = true
 
 func main() {
 	go func() {
 		game_data = get_vanilla_path()
+		read_config()
 		http.Handle("/", http.HandlerFunc(
 			func(rw http.ResponseWriter, r *http.Request) {
 				log.Printf("%s %s%s from %s\n", r.Method, r.Host, r.URL.String(), r.RemoteAddr)
@@ -85,7 +87,12 @@ func main() {
 					r2.URL.Path = p
 					r2.URL.RawPath = rp
 					log.Printf("%s %s%s from %s changed\n", r2.Method, r2.Host, r2.URL.String(), r2.RemoteAddr)
-					http.FileServer(http.Dir("/Paradox Interactive/Victoria 3/mod/"+mod_name)).ServeHTTP(rw, r2)
+					if mod_full_flag {
+						http.FileServer(http.Dir(mod_name)).ServeHTTP(rw, r2)
+					} else {
+						http.FileServer(http.Dir(os.Getenv("USERPROFILE")+"Documents/Paradox Interactive/Victoria 3/mod/"+mod_name)).ServeHTTP(rw, r2)
+					}
+
 				}))
 		}
 		http.HandleFunc("/upload", handle_upload)
@@ -102,6 +109,35 @@ func main() {
 
 	// 托盘程序逻辑
 	systray.Run(onReady, onExit, onClicked)
+}
+
+type ConfigData struct {
+	// {
+	// 	"src": "src",
+	// 	"data": {
+	// 		"1.txt":"..."
+	// 		"2.txt":"..."
+	// 	}
+	// }
+	Gamedata    string `json:"game_data"`
+	ModName     string `json:"mod_name"`
+	ModFullFlag bool   `json:"mod_full_flag"`
+}
+
+func read_config() {
+	jsonFile, err := os.Open("config.json")
+	if err != nil {
+		log.Println("Cannot open config file", err)
+	}
+	defer jsonFile.Close()
+
+	config_data := ConfigData{}
+	json.NewDecoder(jsonFile).Decode(&config_data)
+	if game_data == "" {
+		game_data = config_data.Gamedata
+	}
+	mod_name = config_data.ModName
+	mod_full_flag = config_data.ModFullFlag
 }
 
 func get_vanilla_path() string {

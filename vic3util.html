@@ -16,6 +16,18 @@
     <div id="panel" class="pageHeader">
         
         <p id="board">
+            <span class="more_setting">
+              <b>
+                <label class="more_setting_entry">...
+                  <span class="more_setting_panel">
+                    <input id="check_is_debug" checked="false" type="checkbox"><label for="check_is_debug">调试模式</label>
+                    <input id="check_is_mod" checked="false" type="checkbox"><label for="check_is_mod">从mod读取</label>
+                    mod名称:<span class="mod_path"></span>
+                    <button id="set_mod_path">设定mod位置</button>
+                  </span>
+                </label>
+              </b>
+            </span>
             <span id="progress">加载中</span>
             <select id="mode_selection">
               <option value="prov">地块</option>

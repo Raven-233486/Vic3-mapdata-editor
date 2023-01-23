@@ -89,3 +89,10 @@ const check_impassable = document.getElementById("check_impassable")
 check_impassable.onclick = function (e){ // onclick?
     full_data.provs_name
 }
+
+let set_mod_path = document.getElementById("set_mod_path")
+set_mod_path.onclick = async function(e){
+    await window.showDirectoryPicker(
+      {startIn:"documents"}
+    ).then(entry => {console.log(entry.name)});
+}
