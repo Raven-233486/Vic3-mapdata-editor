@@ -144,16 +144,34 @@ import {get_dict_map,get_file_dict,get_csv,get_debug_info,get_text_dict,get_terr
 import { localization } from './i18n/i18n.js';
 
 var debug_info = await get_debug_info()
+var config = await get_debug_info(true)
 var debug = debug_info["debug"]
 var vanilla = debug_info["vanilla"]
 var root_src= "data"
+var mod_name = config["mod_name"]
 if (vanilla) root_src = "game_data"
+
+export {debug_info,config}
 
 var strategic_regions,state_regions,history_state,pops,buildings
 
 var history_state_dict,state_regions_map,strategic_regions_map,pops_map,buildings_map
 var terrain_map
-if (!debug){
+
+if (mod_name){
+    strategic_regions = await get_file_dict("strategic_regions",{mod:true})
+    state_regions = await get_file_dict("state_regions",{mod:true})
+    history_state = await get_file_dict("states",{mod:true})
+    pops = await get_file_dict("pops",{mod:true})
+    buildings = await get_file_dict("buildings",{mod:true})
+
+    history_state_dict = get_dict_map(history_state,"STATES")
+    state_regions_map = get_dict_map(state_regions)
+    strategic_regions_map = get_dict_map(strategic_regions)
+    pops_map = get_dict_map(pops,"POPS")
+    buildings_map = get_dict_map(buildings,"BUILDINGS")
+
+} else if (!debug){
     if (!vanilla){
         strategic_regions = await get_file_dict("strategic_regions")
         state_regions = await get_file_dict("state_regions")
@@ -162,13 +180,12 @@ if (!debug){
         buildings = await get_file_dict("buildings")
     } else {
         console.log("vanilla")
-        strategic_regions = await get_file_dict("game/common/strategic_regions",vanilla)
-        state_regions = await get_file_dict("game/map_data/state_regions",vanilla)
-        history_state = await get_file_dict("game/common/history/states",vanilla)
-        pops = await get_file_dict("game/common/history/pops",vanilla)
-        buildings = await get_file_dict("game/common/history/buildings",vanilla)
+        strategic_regions = await get_file_dict("game/common/strategic_regions",{vanilla:true})
+        state_regions = await get_file_dict("game/map_data/state_regions",{vanilla:true})
+        history_state = await get_file_dict("game/common/history/states",{vanilla:true})
+        pops = await get_file_dict("game/common/history/pops",{vanilla:true})
+        buildings = await get_file_dict("game/common/history/buildings",{vanilla:true})
     }
-
 
     history_state_dict = get_dict_map(history_state,"STATES")
     state_regions_map = get_dict_map(state_regions)
@@ -206,7 +223,9 @@ for (let i=0;i<adjacencies.length;i++){
 
 var full_map_data = {history_state_dict,adj_pos,state_regions_map,strategic_regions_map,pops_map,buildings_map,terrain_map,
     strategic_data_lock,terrain_data_lock}
-export {full_map_data}
+var raw_map_data = {strategic_regions,state_regions,history_state,pops,buildings}
+export {full_map_data,raw_map_data}
+
 
 const img = new Image()
 var img_src = "./data/provinces.png" /** 我也不知道为什么现在是onload在后面才行 **/

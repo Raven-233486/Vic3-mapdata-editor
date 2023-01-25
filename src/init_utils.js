@@ -1,18 +1,20 @@
 import {jomini} from "./index.js"
 
-const get_debug_info = async () =>{
+const get_debug_info = async (config=false) =>{
+    if (config) return fetch("./debug?config=yes").then(resp => resp.json())
     return fetch("./debug").then(resp => resp.json())
 }
 
 const get_text_dict = async (src) => { return fetch (src)
     .then(resp => resp.text()).then(buffer => jomini.parseText(buffer))}
-const get_file_dict = async (src,vanilla=false) => {
+const get_file_dict = async (src,{vanilla=false,mod=false}={}) => {
     return fetch(`./upload?src=${src}`).then(resp => resp.json())
     .then(
         async(list) =>{
             let dict = {}
             let root_src= "data"
             if (vanilla) root_src = "game_data"
+            if (mod) root_src = "mod_data"
             for (let i=0,len=list.length;i<len;i++){
                 dict[list[i]] = await fetch(`./${root_src}/${src}/${list[i]}`).then(resp => resp.text()).then(buffer => jomini.parseText(buffer))
             }

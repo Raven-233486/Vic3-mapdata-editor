@@ -41,6 +41,7 @@ var SetForegroundWindow = user32.NewProc("SetForegroundWindow")
 var data_src = "./data"
 var game_data = ""
 var mod_name = ""
+var mod_full_path = ""
 var mod_full_flag = true
 
 func main() {
@@ -90,7 +91,8 @@ func main() {
 					if mod_full_flag {
 						http.FileServer(http.Dir(mod_name)).ServeHTTP(rw, r2)
 					} else {
-						http.FileServer(http.Dir(os.Getenv("USERPROFILE")+"Documents/Paradox Interactive/Victoria 3/mod/"+mod_name)).ServeHTTP(rw, r2)
+						mod_full_path = os.Getenv("USERPROFILE") + "Documents/Paradox Interactive/Victoria 3/mod/" + mod_name
+						http.FileServer(http.Dir(mod_full_path)).ServeHTTP(rw, r2)
 					}
 
 				}))
@@ -236,16 +238,26 @@ func handle_upload(rw http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("%s %s%s from %s\n", r.Method, r.Host, r.URL.String(), r.RemoteAddr)
 	if r.Method == "POST" {
+		root_src := r.URL.Query().Get("root")
+		mod_name := r.URL.Query().Get("mod")
 		formData := upload_data{}
+		if root_src == "" {
+			if mod_name == "" {
+				root_src = data_src
+			} else {
+				root_src = mod_full_path
+			}
+		}
+
 		json.NewDecoder(r.Body).Decode(&formData)
 
 		src := formData.Src
 		data := formData.Data
 
 		if src != "" {
-			src = data_src + "/" + src
+			src = root_src + "/" + src
 		} else {
-			src = data_src
+			src = root_src
 		}
 		log.Printf("dump to %s ", src)
 		for key, value := range data {
@@ -290,16 +302,43 @@ func handle_debug(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal("parse form error", err)
 	}
-	log.Printf("%s %s%s from %s\n", r.Method, r.Host, r.URL.String(), r.RemoteAddr)
+	config := r.URL.Query().Get("config")
+	if config != "" {
+		log.Printf("%s %s%s from %s\n", r.Method, r.Host, r.URL.String(), r.RemoteAddr)
+	}
 	if r.Method == "GET" {
-		res := map[string]bool{
-			"debug":   isDebug,
-			"vanilla": isGameinstall,
+		if config != "" {
+			jsonFile, err := os.Open("config.json")
+			if err != nil {
+				log.Println("Cannot open config file", err)
+			}
+			defer jsonFile.Close()
+
+			config_data := ConfigData{}
+			json.NewDecoder(jsonFile).Decode(&config_data)
+			json.NewEncoder(rw).Encode(config_data)
+		} else {
+			res := map[string]bool{
+				"debug":   isDebug,
+				"vanilla": isGameinstall,
+			}
+			json.NewEncoder(rw).Encode(res)
 		}
-		json.NewEncoder(rw).Encode(res)
 
 	} else if r.Method == "POST" {
-		isDebug = !isDebug
+		formData := upload_data{}
+		json.NewDecoder(r.Body).Decode(&formData)
+		data := formData.Data
+		src := "./config.json"
+		log.Printf("dump to %s ", src)
+		res, err := json.Marshal(data)
+		if err != nil {
+			log.Printf("Can not dump the config.json")
+		}
+		err = ioutil.WriteFile(src, res, 0666)
+		if err != nil {
+			log.Printf("Error occurs when dump to config.json")
+		}
 	}
 
 }
