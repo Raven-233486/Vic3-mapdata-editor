@@ -88,12 +88,7 @@ func main() {
 					r2.URL.Path = p
 					r2.URL.RawPath = rp
 					log.Printf("%s %s%s from %s changed\n", r2.Method, r2.Host, r2.URL.String(), r2.RemoteAddr)
-					if mod_full_flag {
-						http.FileServer(http.Dir(mod_name)).ServeHTTP(rw, r2)
-					} else {
-						mod_full_path = os.Getenv("USERPROFILE") + "Documents/Paradox Interactive/Victoria 3/mod/" + mod_name
-						http.FileServer(http.Dir(mod_full_path)).ServeHTTP(rw, r2)
-					}
+					http.FileServer(http.Dir(mod_full_path)).ServeHTTP(rw, r2)
 
 				}))
 		}
@@ -140,6 +135,13 @@ func read_config() {
 	}
 	mod_name = config_data.ModName
 	mod_full_flag = config_data.ModFullFlag
+	if mod_name != "" {
+		mod_full_path = os.Getenv("USERPROFILE") + "/Documents/Paradox Interactive/Victoria 3/mod/" + mod_name
+		if mod_full_flag {
+			mod_full_path = mod_name
+		}
+		log.Printf("Get mod: %s from %s", mod_name, mod_full_path)
+	}
 }
 
 func get_vanilla_path() string {
@@ -268,12 +270,17 @@ func handle_upload(rw http.ResponseWriter, r *http.Request) {
 		}
 	} else if r.Method == "GET" {
 		src := r.URL.Query().Get("src")
+		has_mod := r.URL.Query().Get("mod")
 		src_root := ""
 		if isGameinstall {
 			src_root = game_data
 		} else {
 			src_root = data_src
 		}
+		if has_mod == "true" {
+			src_root = mod_full_path
+		}
+		log.Printf("Has mod %s,%s", has_mod, mod_full_path)
 		if src != "" {
 			src = src_root + "/" + src
 		} else {

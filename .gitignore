@@ -11,3 +11,4 @@ data/adjacencies.csv
 data/province_terrains.txt
 data/provinces.png
 data/rivers.png
+config.json

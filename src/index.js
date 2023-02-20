@@ -159,11 +159,11 @@ var history_state_dict,state_regions_map,strategic_regions_map,pops_map,building
 var terrain_map
 
 if (mod_name){
-    strategic_regions = await get_file_dict("strategic_regions",{mod:true})
-    state_regions = await get_file_dict("state_regions",{mod:true})
-    history_state = await get_file_dict("states",{mod:true})
-    pops = await get_file_dict("pops",{mod:true})
-    buildings = await get_file_dict("buildings",{mod:true})
+    strategic_regions = await get_file_dict("common/strategic_regions",{mod:true})
+    state_regions = await get_file_dict("map_data/state_regions",{mod:true})
+    history_state = await get_file_dict("common/history/states",{mod:true})
+    pops = await get_file_dict("common/history/pops",{mod:true})
+    buildings = await get_file_dict("common/history/buildings",{mod:true})
 
     history_state_dict = get_dict_map(history_state,"STATES")
     state_regions_map = get_dict_map(state_regions)
