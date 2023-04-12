@@ -1,7 +1,6 @@
 import { canvas, full_data } from "./index.js";
 import { do_draw } from "./drawing_little.js"
 
-let muti_select = false
 
 
 const gethexname = (r,g,b) => "x" + (r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0')).toUpperCase()

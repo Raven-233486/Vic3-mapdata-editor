@@ -4,42 +4,41 @@ const wasmUrl = '/src/jomini/jomini.wasm';
 const canvas = document.getElementById('canvas');
 canvas.style.cursor = "crosshair"
 
-var ctx = canvas.getContext('2d',{colorSpace: "srgb",willReadFrequently:true});
+let ctx = canvas.getContext('2d',{colorSpace: "srgb",willReadFrequently:true});
 ctx.imageSmoothingEnabled = false;
 
-var tip = document.getElementById('output')
+let tip = document.getElementById('output')
 
 
-var progress_text = document.getElementById('progress');
+let progress_text = document.getElementById('progress');
 
-var provs = new Set();
-var provs_name = new Set();
-var state_name = new Set()
+let provs = new Set();
+let provs_name = new Set();
+let state_name = new Set()
 
-var reset_layer = new OffscreenCanvas(0,0)
-var state_layer = new OffscreenCanvas(0,0)
-var state_layer = new OffscreenCanvas(0,0)
-var strategic_layer = new OffscreenCanvas(0,0)
-var terrain_layer = new OffscreenCanvas(0,0)
-var border_layer = new OffscreenCanvas(0,0)
-var hub_layer = new OffscreenCanvas(0,0)
-var locator_layer = new OffscreenCanvas(0,0)
-var river_layer = new OffscreenCanvas(0,0)
+let reset_layer = new OffscreenCanvas(0,0)
+let state_layer = new OffscreenCanvas(0,0)
+let strategic_layer = new OffscreenCanvas(0,0)
+let terrain_layer = new OffscreenCanvas(0,0)
+let border_layer = new OffscreenCanvas(0,0)
+let hub_layer = new OffscreenCanvas(0,0)
+let locator_layer = new OffscreenCanvas(0,0)
+let river_layer = new OffscreenCanvas(0,0)
 
-var render_layer = new OffscreenCanvas(0,0)
+let render_layer = new OffscreenCanvas(0,0)
 
-var reset_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-var state_data = null
-var strategic_data = null
-var terrain_data = null
+let reset_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+let state_data = null
+let strategic_data = null
+let terrain_data = null
 
-var colormap = null
-var statecolormap = {}
-var statepointmap = {}
-var mode = "prov"
+let colormap = null
+let statecolormap = {}
+let statepointmap = {}
+let mode = "prov"
 
 
-var layers = {
+let layers = {
     reset_layer,
     state_layer,
     state_layer,
@@ -61,7 +60,7 @@ const init_layers = (width,height) => {
 }
 
 
-var full_data = {
+let full_data = {
     ctx,
     provs,
     provs_name,
@@ -79,8 +78,28 @@ var full_data = {
 }
 export {full_data}
 
-var zoom_size = [1/4,1/2,1,2,3,4,5]
-var zoom_index = 2
+let zoom_size = [1/4,1/2,1,2,3,4,5]
+let zoom_index = 2
+
+class PointSet{
+    constructor(points=[]){
+        this.points = arr
+    }
+
+    putImageData(ctx,imgdata){
+        let start_y = Math.floor(this.points[0]/4/canvas.width)
+        let height = Math.floor(this.points[this.points.length-1]/4/canvas.width) - start_y
+        let start_x = canvas.width
+        let end_x = 0
+        for (let i=this.points.length;i--;){
+            let this_x = (this.points[i]/4) % canvas.width
+            if (this_x < start_x) start_x = this_x
+            if (this_x > end_x ) end_x = this_x
+        }
+        let width = end_x - start_x
+        ctx.putImageData(imgdata,start_x,start_y,start_x,start_y,width,height)
+    }
+}
 
 class Point{
     constructor(x=-1,y=-1,sindex=-1){
@@ -128,12 +147,12 @@ class Point{
     }
 }
 
-var panelboard = document.getElementById('panelboard')
-var select_info = panelboard.querySelector(".panel_top_right")
-var state_display_name = panelboard.querySelector("#state_id")
-var country_display_name = panelboard.querySelector("#country_id")
-var edit_panelboard = document.getElementById('edit_panelboard')
-var state_panelboard = document.getElementById('state_panelboard')
+let panelboard = document.getElementById('panelboard')
+let select_info = panelboard.querySelector(".panel_top_right")
+let state_display_name = panelboard.querySelector("#state_id")
+let country_display_name = panelboard.querySelector("#country_id")
+let edit_panelboard = document.getElementById('edit_panelboard')
+let state_panelboard = document.getElementById('state_panelboard')
 
 const gethexname = (r,g,b) => "x" + (r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0')).toUpperCase()
 
@@ -143,20 +162,20 @@ export {canvas,jomini}
 import {get_dict_map,get_file_dict,get_csv,get_debug_info,get_text_dict,get_terrain_dict} from "./init_utils.js"
 import { localization } from './i18n/i18n.js';
 
-var debug_info = await get_debug_info()
-var config = await get_debug_info(true)
-var debug = debug_info["debug"]
-var vanilla = debug_info["vanilla"]
-var root_src= "data"
-var mod_name = config["mod_name"]
+let debug_info = await get_debug_info()
+let config = await get_debug_info(true)
+let debug = debug_info["debug"]
+let vanilla = debug_info["vanilla"]
+let root_src= "data"
+let mod_name = config["mod_name"]
 if (vanilla) root_src = "game_data"
 
 export {debug_info,config}
 
-var strategic_regions,state_regions,history_state,pops,buildings
+let strategic_regions,state_regions,history_state,pops,buildings
 
-var history_state_dict,state_regions_map,strategic_regions_map,pops_map,buildings_map
-var terrain_map
+let history_state_dict,state_regions_map,strategic_regions_map,pops_map,buildings_map
+let terrain_map
 
 if (mod_name){
     strategic_regions = await get_file_dict("common/strategic_regions",{mod:true})
@@ -204,14 +223,14 @@ if (mod_name){
 
 console.log(pops_map,buildings_map)
 
-var strategic_data_lock = false
-var terrain_data_lock = false
+let strategic_data_lock = false
+let terrain_data_lock = false
 
-var adj_src = "./data/adjacencies.csv"
+let adj_src = "./data/adjacencies.csv"
 if (vanilla) adj_src = "./game_data/game/map_data/adjacencies.csv"
-var adjacencies = await fetch(adj_src).then(resp => resp.text()).then(buffer => get_csv(buffer))
+let adjacencies = await fetch(adj_src).then(resp => resp.text()).then(buffer => get_csv(buffer))
 
-var adj_pos = []
+let adj_pos = []
 for (let i=0;i<adjacencies.length;i++){
     if (adjacencies[i]["start_x"]>0){
         adj_pos.push([adjacencies[i]["start_x"],
@@ -221,15 +240,21 @@ for (let i=0;i<adjacencies.length;i++){
     }
 }
 
-var full_map_data = {history_state_dict,adj_pos,state_regions_map,strategic_regions_map,pops_map,buildings_map,terrain_map,
+let full_map_data = {history_state_dict,adj_pos,state_regions_map,strategic_regions_map,pops_map,buildings_map,terrain_map,
     strategic_data_lock,terrain_data_lock}
-var raw_map_data = {strategic_regions,state_regions,history_state,pops,buildings}
+
+let raw_map_data = {strategic_regions,state_regions,history_state,pops,buildings}
 export {full_map_data,raw_map_data}
 
 
 const img = new Image()
-var img_src = "./data/provinces.png" /** 我也不知道为什么现在是onload在后面才行 **/
+let img_src = "./data/provinces.png" /** 我也不知道为什么现在是onload在后面才行 **/
 if (vanilla) img_src = "./game_data/game/map_data/provinces.png"
+if (mod_name) {
+    fetch("./mod_data/game/map_data/provinces.png").then((resp) => {
+    if (resp.ok) img_src = "./mod_data/game/map_data/provinces.png"})
+}
+
 img.src = img_src
 img.crossOrigin = ""
 canvas.width = img.width;
@@ -246,7 +271,10 @@ let provid = []
 init_worker.onmessage = function(e) {
     if (e.data["correct_history_state_dict"]) full_map_data.history_state_dict = e.data["correct_history_state_dict"]
     else if(e.data["localiztion"]) {console.log(e.data["localiztion"])}
-    else if (!e.data["ok"]) progress_text.textContent = e.data["data"]
+    else if (!e.data["ok"]) {
+        progress_text.textContent = e.data["data"]
+        if (e.data["error"]) alert(e.data["error"])
+    }
     else {
         progress_text.style.display = "none"
         colormap = e.data["colormap"]
@@ -303,13 +331,17 @@ img.onload =function(e){
         else location.reload()
     }
     init_worker.postMessage({localization})
-    init_worker.postMessage([reset_data,history_state_dict,canvas.width])
+    init_worker.postMessage([reset_data,full_map_data.history_state_dict,canvas.width])
     let river_src = "./data/rivers.png"
     if (vanilla) river_src = "./game_data/game/map_data/rivers.png"
+    if (mod_name) {
+        fetch("./mod_data/game/map_data/rivers.png").then((resp) => {
+        if (resp.ok) img_src = "./mod_data/game/map_data/rivers.png"})
+    }
     river_map.src = river_src
 
 }
-var river_data = null
+let river_data = null
 const river_map = new Image()
 const river_list = []
 river_map.onload = function(e){
@@ -325,7 +357,7 @@ river_map.onload = function(e){
 let city_select = false
 let city_select_type = null
 
-var little_data = {
+let little_data = {
     river_data,
     city_select,
     city_select_type

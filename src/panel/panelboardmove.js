@@ -1,5 +1,5 @@
-var panelboard = document.getElementById('panelboard')
-var canvas = document.getElementById('canvas')
+let panelboard = document.getElementById('panelboard')
+let canvas = document.getElementById('canvas')
 let panelboard_lock = true
 let x = 0
 

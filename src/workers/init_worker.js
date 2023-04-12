@@ -12,14 +12,14 @@ const handle = (data) => {
     return initiate(data[0],data[1],data[2])
 }
 
-var colormap = {}
-var color_key_map = {}
-var statepointmap = {}
-var statecolormap = {}
-var state_data = {}
-var length = 0
-var history_state_dictlength = 0
-var the_length = 0
+let colormap = {}
+let color_key_map = {}
+let statepointmap = {}
+let statecolormap = {}
+let state_data = {}
+let length = 0
+let history_state_dictlength = 0
+let the_length = 0
 const initiate = (data,history_state_dict,width) => { 
     length = data.data.length
     history_state_dictlength = Object.keys(history_state_dict["STATES"]).length
@@ -83,7 +83,7 @@ const init_state_map = (colormap,history_state_dict) => {
 
         let state_block = state_region_block[u]["create_state"]
         if (!state_block) {
-            console.log(u) // TODO: a better displaying
+            console.warn(u) // TODO: a better displaying
             delete state_region_block[u]
             continue
         }
@@ -104,20 +104,27 @@ const init_state_map = (colormap,history_state_dict) => {
         } else{
             let state_mark = `${u}.region_state:${state_block["country"]}`
             statecolormap[state_mark] = [Math.ceil(Math.random()*255),Math.ceil(Math.random()*255),Math.ceil(Math.random()*255)]
-            for (let prov_block = state_block["owned_provinces"],i=prov_block.length;i--;){
-                if (wrong_patt.exec(prov_block[i])) prov_block[i] = "x"+parseInt("0"+prov_block[i]).toString(16).padStart(6, '0').toUpperCase()
-                if (!colormap[prov_block[i]]){
-                    console.warn("Can not find: "+prov_block[i]+" in map! deleted.")
-                    prov_block = prov_block.filter((items,index) => ![i].includes(index))
-                    continue
+            if ( state_block["owned_provinces"] ) {
+                for (let prov_block = state_block["owned_provinces"],i=prov_block.length;i--;){
+                    if (wrong_patt.exec(prov_block[i])) prov_block[i] = "x"+parseInt("0"+prov_block[i]).toString(16).padStart(6, '0').toUpperCase()
+                    if (!colormap[prov_block[i]]){
+                        console.warn("Can not find: "+prov_block[i]+" in map! deleted.")
+                        prov_block = prov_block.filter((items,index) => ![i].includes(index))
+                        continue
+                    }
+                    for (let jj = colormap[prov_block[i]].length;jj--;){
+                        let j = colormap[prov_block[i]][jj]
+                        if (statepointmap[state_mark]){
+                            statepointmap[state_mark].push(j) 
+                        } else {statepointmap[state_mark] = [j]}
+                    }
                 }
-                for (let jj = colormap[prov_block[i]].length;jj--;){
-                    let j = colormap[prov_block[i]][jj]
-                    if (statepointmap[state_mark]){
-                        statepointmap[state_mark].push(j) 
-                    } else {statepointmap[state_mark] = [j]}
-                }
+            } else {
+                console.warn(u) // TODO: a better displaying
+                delete state_region_block[u]
+                continue
             }
+            
         }
     }
     postMessage({"correct_history_state_dict":history_state_dict})
@@ -130,7 +137,7 @@ const get_state_data = (img_data,width) => {
     let this_color = null
     let next_color = null
     let down_color = null
-    for (var i = 0; i < length; i+=4){
+    for (let i = 0; i < length; i+=4){
         if (i+4*width >= length || (i+1)%width == 0 ){continue}
         let progress = (i/length)*100
         if (progress >= nowprogress){

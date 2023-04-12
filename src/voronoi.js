@@ -62,7 +62,7 @@ class Point {
 
 
 //记录不同点的颜色
-var colorMap = {};
+let colorMap = {};
 
 
 
@@ -81,8 +81,8 @@ class Voronoi {
 
     randomPoint(){
         console.log("?")
-        for(var i =this.num_of_points ;i--;){
-            var tmpPoint = new Point(0,0);
+        for(let i =this.num_of_points ;i--;){
+            let tmpPoint = new Point(0,0);
             tmpPoint.randomPoint(this.width,this.height);
             this.points.push(tmpPoint);
             this.colorMap[i] ="#" + Math.floor(Math.random() * 16777216).toString(16).padStart(6, '0')
@@ -156,14 +156,14 @@ voronoi.onclick = function(e){
     Overlay(v1,v4)
     drawVoronoi(ctx,v4)
 
-    // for(var i = 0; i < width ; i++){
-    //     for(var j = 0; j <height ; j++){
+    // for(let i = 0; i < width ; i++){
+    //     for(let j = 0; j <height ; j++){
             
-    //         var dis = -1;
-    //         var nearPointID = 0;
+    //         let dis = -1;
+    //         let nearPointID = 0;
             
-    //         for(var m = 0 ; m < points.length ; m++){
-    //             var tmpDis = points[m].pointdis(new Point(i,j));
+    //         for(let m = 0 ; m < points.length ; m++){
+    //             let tmpDis = points[m].pointdis(new Point(i,j));
     //             if(dis < 0){
     //                 dis = tmpDis;
     //             }
