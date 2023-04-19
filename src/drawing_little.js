@@ -28,7 +28,7 @@ const draw_river = () => {
 }
 
 const speicail_city = () =>{
-    for (let i=0,len=Object.keys(full_map_data.state_regions_map).length;i<len;i++){
+    for (let i=Object.keys(full_map_data.state_regions_map).length;i--;){
         let this_value = full_map_data.state_regions_map[Object.keys(full_map_data.state_regions_map)[i]]
         if (this_value["city"]){
             speicail_border(this_value["city"],"city")
@@ -96,7 +96,7 @@ const speicail_border = (colorname,type) => {
 }
 
 const canvas_map_adj = ()=> {
-    for (let i=0;i<full_map_data.adj_pos.length;i++) canvas_draw_adj(full_map_data.adj_pos[i][0],full_map_data.adj_pos[i][1],full_map_data.adj_pos[i][2],full_map_data.adj_pos[i][3])
+    for (let i=full_map_data.adj_pos.length;i--;) canvas_draw_adj(full_map_data.adj_pos[i][0],full_map_data.adj_pos[i][1],full_map_data.adj_pos[i][2],full_map_data.adj_pos[i][3])
 }
 
 const canvas_draw_adj = (sx,sy,ex,ey)=>{

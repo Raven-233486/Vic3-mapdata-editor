@@ -38,6 +38,8 @@ let statepointmap = {}
 let mode = "prov"
 
 
+let width = canvas.width
+
 let layers = {
     reset_layer,
     state_layer,
@@ -73,7 +75,7 @@ let full_data = {
     state_data,
     strategic_data,
     terrain_data,
-
+    width,
     layers,
 }
 export {full_data}
@@ -231,7 +233,7 @@ if (vanilla) adj_src = "./game_data/game/map_data/adjacencies.csv"
 let adjacencies = await fetch(adj_src).then(resp => resp.text()).then(buffer => get_csv(buffer))
 
 let adj_pos = []
-for (let i=0;i<adjacencies.length;i++){
+for (let i=adjacencies.length;i--;){
     if (adjacencies[i]["start_x"]>0){
         adj_pos.push([adjacencies[i]["start_x"],
         adjacencies[i]["start_y"],adjacencies[i]["stop_x"],
@@ -331,6 +333,7 @@ img.onload =function(e){
         else location.reload()
     }
     init_worker.postMessage({localization})
+    full_data.width = canvas.width
     init_worker.postMessage([reset_data,full_map_data.history_state_dict,canvas.width])
     let river_src = "./data/rivers.png"
     if (vanilla) river_src = "./game_data/game/map_data/rivers.png"
@@ -437,15 +440,17 @@ const province_detail = function(e){
     let x = e.pageX - this.offsetLeft
     let y = e.pageY - this.offsetTop
 
-    let r = reset_data.data[(y*canvas.width + x)*4]
-    let g = reset_data.data[(y*canvas.width + x)*4 + 1]
-    let b = reset_data.data[(y*canvas.width + x)*4 + 2]
+    let sindex = (y*canvas.width + x)*4
+
+    let r = reset_data.data[sindex]
+    let g = reset_data.data[sindex + 1]
+    let b = reset_data.data[sindex + 2]
 
     let name = gethexname(r,g,b)
 
     let state_name = localization.states +": "
     let country_name = localization.country+": "
-    let the_detail = state_detail((y*canvas.width + x)*4)
+    let the_detail = state_detail(sindex)
 
     if (the_detail){
         canvas.title = `(${x},${canvas.height-y})\n${name}\n${state_name+the_detail[0]}\n${country_name+the_detail[1]}`
@@ -455,15 +460,14 @@ const province_detail = function(e){
         canvas.title = `(${x},${canvas.height-y})\n${name}`
         tip.textContent = `(${x},${canvas.height-y})\n${name}`
     }
-
-    
 }
 
 const state_detail = (sindex,interfacer=()=>{}) =>{
     let state = ""
     let country = ""
-    for (let statepoint in statepointmap){
-        if (statepointmap[statepoint].indexOf(sindex) >=0){
+    for (let keys = Object.keys(statepointmap),i = keys.length;i--;){
+        let statepoint = keys[i]
+        if (statepointmap[statepoint].includes(sindex)){
             state = statepoint.split(".region_state:")[0]
             country = statepoint.split(".region_state:")[1]
             return [state,country]
@@ -474,14 +478,17 @@ const state_detail = (sindex,interfacer=()=>{}) =>{
     
 }
 
+
+
+
 export {state_detail}
 
 import {handle_state_edit} from "./panel/state_panel.js"
 
+
 canvas.onclick = canvas_select
 canvas.onmouseover = province_detail
 canvas.onmousemove = province_detail
-
 
 
 import {update_map} from "./update/update_states.js"
@@ -561,28 +568,34 @@ let start_x = 0
 let start_y = 0
 let end_x = 0
 let end_y = 0
+let muti_selecting = false
 
 import { muti_selection } from './canvas_selection.js';
 
+
 canvas.addEventListener("mousedown",function(e){
     if (mode == "edit"){
+        full_data.ctx.save()
         start_x = e.pageX - this.offsetLeft
         start_y = e.pageY - this.offsetTop
+        muti_selecting = true
         if (!e.ctrlKey){
-            provs_name.clear()
+            full_data.provs_name.clear()
         }
-        canvas.addEventListener("mouseup",function(e){
-            end_x = e.pageX - this.offsetLeft
-            end_y = e.pageY - this.offsetTop
-            if (mode == "edit"){
-                if (start_x != end_x || start_y != end_y){
-                    muti_selection(provs_name,start_x,start_y,end_x,end_y,e)
-                }
-            }
-        })
+        
+    } 
+})
+
+canvas.addEventListener("mouseup",function(e){
+    end_x = e.pageX - this.offsetLeft
+    end_y = e.pageY - this.offsetTop
+    muti_selecting = false
+    if (mode == "edit"){
+        if (start_x != end_x || start_y != end_y){
+            muti_selection(full_data.provs_name,start_x,start_y,end_x,end_y,e)
+            e.stopPropagation()
+        }
     }
-
-
 })
 
 canvas.addEventListener("contextmenu",function(e){

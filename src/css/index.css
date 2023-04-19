@@ -36,6 +36,7 @@ html,body,div,span,p,canvas,h3{
 canvas {
     position: absolute;
     z-index: 150;
+    top: 41px;
 }
 .output{
     float:right;

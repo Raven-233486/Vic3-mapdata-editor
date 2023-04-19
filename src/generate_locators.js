@@ -37,7 +37,7 @@ class generate_locator {
     }
 
     dump(){
-        for (let i=0,len=Object.keys(this.instances).length;i<len;i++){
+        for (let i=Object.keys(this.instances).length;i--;){
             let key = Object.keys(this.instances)[i]
             console.log(key,this.instances[key][0],this.instances[key][1])
             this.rawappend(this.instances[key][0],this.instances[key][1],key)

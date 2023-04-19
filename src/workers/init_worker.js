@@ -83,7 +83,7 @@ const init_state_map = (colormap,history_state_dict) => {
 
         let state_block = state_region_block[u]["create_state"]
         if (!state_block) {
-            console.warn(u) // TODO: a better displaying
+            console.warn(`${u}don't have \"create_state\" key`) // TODO: a better displaying
             delete state_region_block[u]
             continue
         }
@@ -120,7 +120,7 @@ const init_state_map = (colormap,history_state_dict) => {
                     }
                 }
             } else {
-                console.warn(u) // TODO: a better displaying
+                console.warn(`${u}don't have \"owned_provinces\" key`) // TODO: a better displaying
                 delete state_region_block[u]
                 continue
             }

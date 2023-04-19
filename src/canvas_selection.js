@@ -2,8 +2,7 @@ import { canvas, full_data } from "./index.js";
 import { do_draw } from "./drawing_little.js"
 
 
-
-const gethexname = (r,g,b) => "x" + (r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0')).toUpperCase()
+const gethexname = (r,g,b) => "x"+ ((r<<16)+(g<<8)+b).toString(16).padStart(6, '0').toUpperCase()
 
 const select_states = (imgdata,reset_data,x,y,state_name,e) => {
     full_data.ctx.putImageData(reset_data, 0, 0)
@@ -27,8 +26,9 @@ const select_states = (imgdata,reset_data,x,y,state_name,e) => {
 }
 
 const select_states_color = (sindex,imgdata) => {
-    for (let statepoint in full_data.statepointmap){
-        if (full_data.statepointmap[statepoint].indexOf(sindex) >=0){
+    for (let keys =  Object.keys(full_data.statepointmap),j=keys.length;j--;){
+        let statepoint = keys[j]
+        if (full_data.statepointmap[statepoint].includes(sindex)){
             for (let i=0;i<full_data.statepointmap[statepoint].length;i++){ imgdata.data[full_data.statepointmap[statepoint][i]+3] -= 100}
             break
         }
@@ -48,8 +48,7 @@ const muti_selection = (provs_name,start_x,start_y,end_x,end_y,e) => {
 
 
 const select_prov_pure = (imgdata,reset_data,label,sindex,provs_name,e) => {
-    console.log(provs_name)
-    console.log(label)
+    
     full_data.ctx.putImageData(full_data.reset_data, 0, 0)
     if (provs_name.has(label)){
         provs_name.delete(label)
@@ -67,23 +66,27 @@ const select_prov_pure = (imgdata,reset_data,label,sindex,provs_name,e) => {
         }
         full_data.ctx.putImageData(imgdata, 0, 0);
     }
+    console.log(provs_name)
+    console.log(label)
 }
 
 
 
 
 const select_provs = (imgdata,state_data,label,sindex,provs_name,e) => {
-    console.log(provs_name)
+    
+    
     full_data.ctx.putImageData(state_data, 0, 0)
     if (provs_name.has(label)){
         provs_name.delete(label)
     } else if(e.ctrlKey) {
         provs_name.add(label)
     } else if(e.shiftKey){
-        for (let j = 0,statepointkey=Object.keys(full_data.statepointmap),len=statepointkey.length;j<len;j++){
+        provs_name.clear()
+        for (let statepointkey=Object.keys(full_data.statepointmap),j = statepointkey.length;j--;){
             let statepoint = statepointkey[j]
-            if (full_data.statepointmap[statepoint].indexOf(sindex) >=0){
-                for (let i=0;i < full_data.statepointmap[statepoint].length;i++){ 
+            if (full_data.statepointmap[statepoint].includes(sindex)){
+                for (let i=full_data.statepointmap[statepoint].length;i--;){ 
                     provs_name.add(gethexname(
                         full_data.reset_data.data[full_data.statepointmap[statepoint][i]],
                         full_data.reset_data.data[full_data.statepointmap[statepoint][i]+1],
@@ -97,7 +100,7 @@ const select_provs = (imgdata,state_data,label,sindex,provs_name,e) => {
         provs_name.clear()
         provs_name.add(label)
     }
-
+    
     if (provs_name.size > 0 ){
         canvas_reset(imgdata,full_data.state_data)
         for (let prov of provs_name){
@@ -105,21 +108,72 @@ const select_provs = (imgdata,state_data,label,sindex,provs_name,e) => {
         }
         full_data.ctx.putImageData(imgdata, 0, 0);
         do_draw()
+        try{
+            let select_area = get_select_area(provs_name)
+
+            full_data.ctx.beginPath()
+            full_data.ctx.rect(select_area[0],select_area[1],select_area[2],select_area[3],)
+            full_data.ctx.stroke()
+            full_data.ctx.closePath()
+        }
+            
+        catch{
+
+        }
     }
+
+    console.log(provs_name)
 }
 
+const get_select_area = (provs_name) => {
+    let area = []
+    let y_min_area = []
+    let y_max_area = []
+    let x_min_area = []
+    let x_max_area = []
+    for (let prov of provs_name){
+        y_min_area.push( Math.floor(Math.min.apply(null,full_data.colormap[prov]) / (4*full_data.width)) )
+        y_max_area.push( Math.floor(Math.max.apply(null,full_data.colormap[prov]) / (4*full_data.width)) )
+        let color_x_area = full_data.colormap[prov].map(sindex => sindex / 4 % full_data.width)
+        x_min_area.push( Math.min.apply(null,color_x_area) )
+        x_max_area.push( Math.max.apply(null,color_x_area) )
+    }
+    // area = area.map(sindex => {
+    //     let y = Math.floor((sindex/4)/full_data.width)
+    //     let x = (sindex/4) - (full_data.width*y)
+    //     return [sindex,full_data.width,x,y]
+    // })
+    // console.log(area)
+    // console.log(Math.min.apply(null,area))
+    // let start_y = Math.floor(Math.min.apply(null,area) / (4*full_data.width))
+    // let select_height = Math.floor(Math.max.apply(null,area) / (4*full_data.width)) - start_y
+
+    // area = area.map(sindex => sindex / 4 % full_data.width)
+    // console.log(area)
+    // let res = [Math.min.apply(null,area),start_y,Math.max.apply(null,area) - Math.min.apply(null,area),select_height]
+    
+    // return res
+    let start_x = Math.min.apply(null,x_min_area)
+    let start_y = Math.min.apply(null,y_min_area)
+    let width = Math.max.apply(null,x_max_area) - start_x
+    let height = Math.max.apply(null,y_max_area) - start_y
+    let res = [start_x,start_y,width,height]
+    console.log(res)
+    return res
+}
 
 const select_provs_color = (hexname,imgdata) => {
     let points = full_data.colormap[hexname]
+    if (!points){
+        console.log(points,hexname)
+    }
     for(let i = 0; i < points.length; i++){
         imgdata.data[points[i]+3] -= 100
     }
 }
 
 const canvas_reset = (imgdata,reset_data) => {
-    for (let i = 0; i < imgdata.data.length;i++){
-            imgdata.data[i] = reset_data.data[i]
-        }
+    imgdata.data.set(reset_data.data)
 }
 
 export { select_provs ,select_states,muti_selection,select_prov_pure }
