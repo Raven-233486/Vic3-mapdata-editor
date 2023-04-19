@@ -108,18 +108,18 @@ const select_provs = (imgdata,state_data,label,sindex,provs_name,e) => {
         }
         full_data.ctx.putImageData(imgdata, 0, 0);
         do_draw()
-        try{
-            let select_area = get_select_area(provs_name)
+        // try{
+        //     let select_area = get_select_area(provs_name)
 
-            full_data.ctx.beginPath()
-            full_data.ctx.rect(select_area[0],select_area[1],select_area[2],select_area[3],)
-            full_data.ctx.stroke()
-            full_data.ctx.closePath()
-        }
+        //     full_data.ctx.beginPath()
+        //     full_data.ctx.rect(select_area[0],select_area[1],select_area[2],select_area[3],)
+        //     full_data.ctx.stroke()
+        //     full_data.ctx.closePath()
+        // }
             
-        catch{
+        // catch{
 
-        }
+        // }
     }
 
     console.log(provs_name)
