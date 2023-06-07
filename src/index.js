@@ -372,7 +372,7 @@ import { do_draw } from './drawing_little.js';
 import { select_provs ,select_states,select_prov_pure } from './canvas_selection.js';
 
 const canvas_select = function(e){
-    let imgdata = ctx.getImageData(0,0,canvas.width,canvas.height)
+    let imgdata = ctx.createImageData(canvas.width,canvas.height)
     let label = ""
     let x = e.pageX - this.offsetLeft
     label += " "

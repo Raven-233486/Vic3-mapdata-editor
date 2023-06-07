@@ -1,6 +1,6 @@
 const blockwrite = (writer,key,value,ambiuious=[],quote=[]) => {
     if (value instanceof Array && ambiuious.indexOf(key) >= 0 ){
-        if (typeof(value[0]) == 'string' || typeof(value[0]) =='number'){
+        if (typeof(value[0]) == 'string' || typeof(value[0]) =='number' || typeof(value[0]) === "boolean"){
             for (let i= 0;i<value.length;i++){
                 let item = value[i]
                 writer.write_unquoted(key)
@@ -10,6 +10,8 @@ const blockwrite = (writer,key,value,ambiuious=[],quote=[]) => {
                     } else {
                         writer.write_integer(item)
                     }
+                } else if ( typeof(item) == 'boolean' ) {
+                    writer.write_bool(item)
                 } else  {
                     if (quote.indexOf(key)>-1){
                         writer.write_quoted(item)
@@ -39,6 +41,8 @@ const blockwrite = (writer,key,value,ambiuious=[],quote=[]) => {
             if (typeof(item) == 'number'){
                 if (String(item).indexOf(".")>-1) writer.write_f32(item)
                 else writer.write_integer(item)
+            } else if ( typeof(item) == 'boolean' ) {
+                writer.write_bool(item)
             } else if (typeof(item) == 'string') {
                 if (quote.indexOf(key)>-1)writer.write_quoted(item)
                 else writer.write_unquoted(item)
@@ -51,7 +55,7 @@ const blockwrite = (writer,key,value,ambiuious=[],quote=[]) => {
             }
         }
         writer.write_end();
-    } else if( typeof(value) == 'string' || typeof(value) =='number' ) {
+    } else if( typeof(value) == 'string' || typeof(value) =='number' || typeof(value) === "boolean") {
         writer.write_unquoted(key)
         if (typeof(value) == 'number'){
             if (String(value).indexOf(".")>-1){
@@ -59,6 +63,8 @@ const blockwrite = (writer,key,value,ambiuious=[],quote=[]) => {
             } else {
                 writer.write_integer(value)
             }
+        } else if ( typeof(value) == 'boolean' ) {
+            writer.write_bool(value)
         } else  {
             if (quote.indexOf(key)>-1) {
                 writer.write_quoted(value)

@@ -71,12 +71,8 @@ const select_prov_pure = (imgdata,reset_data,label,sindex,provs_name,e) => {
 }
 
 
-
-
 const select_provs = (imgdata,state_data,label,sindex,provs_name,e) => {
-    
-    
-    full_data.ctx.putImageData(state_data, 0, 0)
+    // full_data.ctx.putImageData(state_data, 0, 0)
     if (provs_name.has(label)){
         provs_name.delete(label)
     } else if(e.ctrlKey) {
@@ -107,56 +103,39 @@ const select_provs = (imgdata,state_data,label,sindex,provs_name,e) => {
             select_provs_color(prov,imgdata)
         }
         full_data.ctx.putImageData(imgdata, 0, 0);
-        do_draw()
         // try{
         //     let select_area = get_select_area(provs_name)
-
-        //     full_data.ctx.beginPath()
-        //     full_data.ctx.rect(select_area[0],select_area[1],select_area[2],select_area[3],)
-        //     full_data.ctx.stroke()
-        //     full_data.ctx.closePath()
+        //     full_data.ctx.strokeRect(select_area[0],select_area[1],select_area[2],select_area[3],)
         // }
             
         // catch{
-
         // }
+        
+    } else {
+        full_data.ctx.putImageData(full_data.state_data, 0, 0)
     }
-
+    
+    do_draw()
     console.log(provs_name)
 }
 
 const get_select_area = (provs_name) => {
-    let area = []
     let y_min_area = []
     let y_max_area = []
     let x_min_area = []
     let x_max_area = []
     for (let prov of provs_name){
-        y_min_area.push( Math.floor(Math.min.apply(null,full_data.colormap[prov]) / (4*full_data.width)) )
-        y_max_area.push( Math.floor(Math.max.apply(null,full_data.colormap[prov]) / (4*full_data.width)) )
+        y_min_area.push( Math.floor(Math.min(...full_data.colormap[prov]) / (4*full_data.width)) )
+        y_max_area.push( Math.floor(Math.max(...full_data.colormap[prov]) / (4*full_data.width)) )
         let color_x_area = full_data.colormap[prov].map(sindex => sindex / 4 % full_data.width)
-        x_min_area.push( Math.min.apply(null,color_x_area) )
-        x_max_area.push( Math.max.apply(null,color_x_area) )
+        x_min_area.push( Math.min(...color_x_area) )
+        x_max_area.push( Math.max(...color_x_area) )
     }
-    // area = area.map(sindex => {
-    //     let y = Math.floor((sindex/4)/full_data.width)
-    //     let x = (sindex/4) - (full_data.width*y)
-    //     return [sindex,full_data.width,x,y]
-    // })
-    // console.log(area)
-    // console.log(Math.min.apply(null,area))
-    // let start_y = Math.floor(Math.min.apply(null,area) / (4*full_data.width))
-    // let select_height = Math.floor(Math.max.apply(null,area) / (4*full_data.width)) - start_y
 
-    // area = area.map(sindex => sindex / 4 % full_data.width)
-    // console.log(area)
-    // let res = [Math.min.apply(null,area),start_y,Math.max.apply(null,area) - Math.min.apply(null,area),select_height]
-    
-    // return res
-    let start_x = Math.min.apply(null,x_min_area)
-    let start_y = Math.min.apply(null,y_min_area)
-    let width = Math.max.apply(null,x_max_area) - start_x
-    let height = Math.max.apply(null,y_max_area) - start_y
+    let start_x = Math.min(...x_min_area)
+    let start_y = Math.min(...y_min_area)
+    let width = Math.max(...x_max_area) - start_x
+    let height = Math.max(...y_max_area) - start_y
     let res = [start_x,start_y,width,height]
     console.log(res)
     return res

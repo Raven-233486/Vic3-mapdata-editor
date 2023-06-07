@@ -263,7 +263,9 @@ func handle_upload(rw http.ResponseWriter, r *http.Request) {
 		}
 		log.Printf("dump to %s ", src)
 		for key, value := range data {
-			err := ioutil.WriteFile(src+"/"+key, []byte(value), 0666)
+			byte_to_write := []byte{0xef, 0xbb, 0xbf}
+			byte_to_write = append(byte_to_write, []byte(value)...)
+			err := ioutil.WriteFile(src+"/"+key, byte_to_write, 0666)
 			if err != nil {
 				log.Println(err)
 			}

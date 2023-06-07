@@ -10,6 +10,7 @@ const preprocess = (map,header) => {
     for (let state=Object.keys(data),i=state.length;i--;){
         let name = state[i]
         for (let state_region=Object.keys(data[name]),j=state_region.length;j--;){
+            if (name == "if") continue
             let full_name = name +"." +state_region[j].replace(":",":c:")
             if (!full_data.statepointmap[full_name]){
                 console.log("delete empty scope",header,full_name)
@@ -63,13 +64,13 @@ const default_upload = async function(e) {
 
     let buildings_map_write = jomini.write(
         (writer) => {
-            justwrite(writer,buildings_map,["create_building"],["building","activate_production_methods"])
+            justwrite(writer,buildings_map,["create_building","if"],["building","activate_production_methods"])
         }
     )
 
     let pops_map_write = jomini.write(
         (writer) => {
-            justwrite(writer,pops_map,["create_pop"])
+            justwrite(writer,pops_map,["create_pop","if"])
         }
     )
 
@@ -193,7 +194,7 @@ const mod_upload = async function(e) {
         buildings_tree[key] = new TextDecoder().decode(
             jomini.write((writer) => {
                 justwrite(writer, buildings_tree[key],
-                ["create_building"], ["building", "activate_production_methods"])})
+                ["create_building","if"], ["building", "activate_production_methods"])})
         ).replaceAll("  ", "\t").replaceAll("=", " = ")
     }
     
@@ -202,7 +203,7 @@ const mod_upload = async function(e) {
         pops_tree[key] = new TextDecoder().decode(
             jomini.write((writer) => {
                 justwrite(writer, pops_tree[key],
-                ["create_pop"])})
+                ["create_pop","if"])})
         ).replaceAll("  ", "\t").replaceAll("=", " = ")
 
     }
