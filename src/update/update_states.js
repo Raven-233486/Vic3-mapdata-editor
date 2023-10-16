@@ -1,7 +1,7 @@
 import { full_data,full_map_data } from "../index.js"
 import { do_draw } from "../drawing_little.js"
 
-let state_key = 5000
+let state_key = 2000
 
 const update_map = (provs_name,state_name,country_name) => {
     // colormap[hexcolor]: [sindex]
