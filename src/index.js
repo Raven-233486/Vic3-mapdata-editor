@@ -369,7 +369,8 @@ export {little_data}
 
 import { strategic_mode,country_mode,state_mode,terrain_mode } from './mode_map_render.js';
 import { do_draw } from './drawing_little.js';
-import { select_provs ,select_states,select_prov_pure } from './canvas_selection.js';
+import { select_provs ,select_states,select_prov_pure,select_terrain } from './canvas_selection.js';
+import { terrain } from './panel/terrain_panel.js';
 
 const canvas_select = function(e){
     let imgdata = ctx.createImageData(canvas.width,canvas.height)
@@ -409,6 +410,8 @@ const canvas_select = function(e){
         select_provs(imgdata,state_data,label,(y*canvas.width + x)*4,provs_name,e)
         select_info.innerText = `${localization.select_provs}${provs_name.size}${localization.pieces}`
         document.getElementById("check_impassable").disabled = (provs_name.size == 1)
+    } else if (mode == "terrain") {
+        select_terrain(imgdata,full_data.terrain_data,label,(y*canvas.width + x)*4,provs_name,e,terrain)
     } else if (mode == "strategic"){
         if (!panel_state_info[0])return
         for(let j=0,keys=Object.keys(full_map_data.strategic_regions_map),len=keys.length;j<len;j++){
@@ -422,8 +425,6 @@ const canvas_select = function(e){
                 break
             }
         }
-
-
         select_states(imgdata,full_data.strategic_data,x,y,state_name,e)
         select_info.innerText = `${localization.select_states}${state_name.size}${localization.pieces}`
     }
@@ -503,7 +504,8 @@ document.getElementById("convert_strategy").addEventListener("click",function(e)
 
 let prov_panelboard = document.getElementById("prov_panelboard")
 let strategic_panelboard = document.getElementById("strategic_panelboard")
-let panelboards = [edit_panelboard,state_panelboard,prov_panelboard,strategic_panelboard]
+let terrain_panelboard = document.getElementById("terrain_panelboard")
+let panelboards = [edit_panelboard,state_panelboard,prov_panelboard,strategic_panelboard,terrain_panelboard]
 const show_panelboard = (e) => {
     for (let i=0;i<panelboards.length;i++){
         if (panelboards[i] == e){
@@ -546,7 +548,7 @@ const mode_render = (mode) => {
             open_locator();
             break
         case "terrain":
-            show_panelboard(null)
+            show_panelboard(terrain_panelboard)
             terrain_mode();
             break
         case "country":
@@ -574,7 +576,7 @@ import { muti_selection } from './canvas_selection.js';
 
 
 canvas.addEventListener("mousedown",function(e){
-    if (mode == "edit"){
+    if (mode == "edit"  || mode == "terrain"){
         full_data.ctx.save()
         start_x = e.pageX - this.offsetLeft
         start_y = e.pageY - this.offsetTop
@@ -590,7 +592,7 @@ canvas.addEventListener("mouseup",function(e){
     end_x = e.pageX - this.offsetLeft
     end_y = e.pageY - this.offsetTop
     muti_selecting = false
-    if (mode == "edit"){
+    if (mode == "edit" || mode == "terrain"){
         if (start_x != end_x || start_y != end_y){
             muti_selection(full_data.provs_name,start_x,start_y,end_x,end_y,e)
             e.stopPropagation()

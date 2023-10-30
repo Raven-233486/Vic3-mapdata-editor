@@ -9,6 +9,7 @@
     <script type="module" src="src/button.js"></script> 
     <script type="module" src="src/panel/panelboardmove.js"></script> 
     <script type="module" src="src/panel/prov_panel.js"></script> 
+    <script type="module" src="src/panel/terrain_panel.js"></script> 
     <script type="module" src="src/i18n/i18n.js"></script> 
   </head>
   <body>
@@ -103,6 +104,61 @@
           <input id="capital_name_input" type="text">
         </p>
         <button id="convert_strategy">转换</button>
+      </div> 
+      <div id="terrain_panelboard" style="display: none;">
+
+          <div>
+          <p>
+            <input id="terrain_input_desert" type="radio" name="terrain" value="desert">
+            <label for="terrain_input_desert"><span style="color: rgb(255,255,0);">■</span>desert</label>
+          </p>
+          <p>
+            <input id="terrain_input_plains" type="radio" name="terrain" value="plains">
+            <label for="terrain_input_plains"><span style="color: rgb(0,255,0);">■</span>plains</label>
+          </p>
+          <p>
+            <input id="terrain_input_wetland" type="radio" name="terrain" value="wetland">
+            <label for="terrain_input_wetland"><span style="color: rgb(218,112,214);">■</span>wetland</label>
+          </p>
+          <p>
+            <input id="terrain_input_mountain" type="radio" name="terrain" value="mountain">
+            <label for="terrain_input_mountain"><span style="color: rgb(255,125,64);">■</span>mountain</label>
+          </p>
+          <p>
+            <input id="terrain_input_ocean" type="radio" name="terrain" value="ocean">
+            <label for="terrain_input_ocean"><span style="color: rgb(0,0,255);">■</span>ocean</label>
+          </p>
+          <p>
+            <input id="terrain_input_lakes" type="radio" name="terrain" value="lakes">
+            <label for="terrain_input_lakes"><span style="color: rgb(0,255,255);">■</span>lakes</label>
+          </p>
+          <p>
+            <input id="terrain_input_snow" type="radio" name="terrain" value="snow">
+            <label for="terrain_input_snow"><span style="color: rgb(255,255,255);">■</span>snow</label>
+          </p>
+          <p>
+            <input id="terrain_input_tundra" type="radio" name="terrain" value="tundra">
+            <label for="terrain_input_tundra"><span style="color: rgb(255,192,203);">■</span>tundra</label>
+          </p>
+          <p>
+            <input id="terrain_input_savanna" type="radio" name="terrain" value="savanna">
+            <label for="terrain_input_savanna"><span style="color: rgb(210,180,140);">■</span>savanna</label>
+          </p>
+          <p>
+            <input id="terrain_input_jungle" type="radio" name="terrain" value="jungle">
+            <label for="terrain_input_jungle"><span style="color: rgb(0,255,127);">■</span>jungle</label>
+          </p>
+          <p>
+            <input id="terrain_input_hills" type="radio" name="terrain" value="hills">
+            <label for="terrain_input_hills"><span style="color: rgb(188,143,143);">■</span>hills</label>
+          </p>
+          <p>
+            <input id="terrain_input_forest" type="radio" name="terrain" value="forest">
+            <label for="terrain_input_forest"><span style="color: rgb(61,145,64);">■</span>forest</label>
+          </p>
+        <button id="terrain_save">save</button>
+        <button id="terrain_initialize">Initialize</button>
+        </div>
       </div> 
     </div>
     <div id="select_box" class="select_box"></div>
