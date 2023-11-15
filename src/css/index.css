@@ -268,3 +268,8 @@ canvas {
     opacity: 1;
     z-index: 1;
 }
+
+#terrain_panelboard input{
+    width: unset;
+    max-width: unset;
+}

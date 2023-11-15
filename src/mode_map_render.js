@@ -2,6 +2,7 @@ import { full_data,full_map_data } from "./index.js";
 import { do_draw } from './drawing_little.js';
 import {get_text_dict} from "./init_utils.js"
 import { localization } from "./i18n/i18n.js";
+import { terrain_color } from "./panel/terrain_panel.js";
 
 
 const strategic_mode = () => {
@@ -139,21 +140,7 @@ const terrain_mode = () => {
     
 }
 
-let terrain_color = {
-    desert: [255,255,0],
-    plains: [0,255,0],
-    wetland: [218,112,214],
-    mountain: [255,125,64],
-    ocean:[0,0,255],
-    lakes:[0,255,255],
-    snow:[255,255,255],
-    tundra:[255,192,203],
-    savanna:[210,180,140],
-    jungle:[0,255,127],
-    hills:[188,143,143],
-    forest:[61,145,64],
-    
-}
+
 
 const render_terrain_data = (img_data,colormap) => {
     let terrain_map = full_map_data.terrain_map

@@ -1,5 +1,6 @@
-import { canvas, full_data } from "./index.js";
+import { canvas, full_data, full_map_data } from "./index.js";
 import { do_draw } from "./drawing_little.js"
+import { terrain_color } from "./panel/terrain_panel.js";
 
 
 const gethexname = (r,g,b) => "x"+ ((r<<16)+(g<<8)+b).toString(16).padStart(6, '0').toUpperCase()
@@ -147,7 +148,7 @@ const select_provs_color = (hexname,imgdata) => {
         console.log(points,hexname)
     }
     for(let i = 0; i < points.length; i++){
-        imgdata.data[points[i]+3] -= 100
+        imgdata.data[points[i] + 3] -= 100
     }
 }
 
@@ -155,4 +156,49 @@ const canvas_reset = (imgdata,reset_data) => {
     imgdata.data.set(reset_data.data)
 }
 
-export { select_provs ,select_states,muti_selection,select_prov_pure }
+
+const select_terrain = (imgdata,reset_data,label,sindex,provs_name,e,terrain) => {
+    
+    full_data.ctx.putImageData(reset_data, 0, 0)
+    if (provs_name.has(label)){
+        provs_name.delete(label)
+    } else if(e.ctrlKey) {
+        provs_name.add(label)
+    }  else {
+        provs_name.clear()
+        provs_name.add(label)
+    }
+
+    if (provs_name.size > 0 ){
+        canvas_reset(imgdata,reset_data)
+        
+        for (let prov of provs_name){
+            let points = full_data.colormap[prov]
+
+            for(let i = 0; i < points.length; i++){
+                if (imgdata.data[points[i]] + imgdata.data[points[i]+1] + imgdata.data[points[i]+2]){
+                    imgdata.data[points[i]] = terrain_color[terrain][0]
+                    imgdata.data[points[i]+1] = terrain_color[terrain][1]
+                    imgdata.data[points[i]+2] = terrain_color[terrain][2]
+                }
+                
+            }
+            
+            for ( let u=0,len=Object.keys(full_map_data.terrain_map).length;u<len;u++){
+                let ter = Object.keys(full_map_data.terrain_map)[u]
+                console.log()
+                full_map_data.terrain_map[ter] = full_map_data.terrain_map[ter].filter((items,index) => ![prov].includes(items))
+            }
+            
+            full_map_data.terrain_map[terrain].push(prov)
+        }
+        console.log(full_map_data.terrain_map)
+        full_data.ctx.putImageData(imgdata, 0, 0);
+        full_data.terrain_data = imgdata
+    }
+    console.log(provs_name)
+    console.log(label)
+}
+
+
+export { select_provs ,select_states,muti_selection,select_prov_pure,select_terrain }
